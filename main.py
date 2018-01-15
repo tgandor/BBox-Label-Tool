@@ -1,14 +1,21 @@
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Name:        Object bounding box label tool
 # Purpose:     Label object bboxes for ImageNet Detection data
 # Author:      Qiushi
 # Created:     06/06/2014
 
 #
-#-------------------------------------------------------------------------------
-from __future__ import division
-from Tkinter import *
-import tkMessageBox
+# ------------------------------------------------------------------------------
+
+from __future__ import division, print_function
+
+try:
+    from Tkinter import *
+    import tkMessageBox
+except ImportError:
+    from tkinter import *
+    from tkinter import messagebox as tkMessageBox
+
 from PIL import Image, ImageTk
 import ttk
 import os
@@ -150,14 +157,9 @@ class LabelTool():
 ##        if not os.path.isdir(s):
 ##            tkMessageBox.showerror("Error!", message = "The specified dir doesn't exist!")
 ##            return
-        # get image list
-        self.imageDir = os.path.join(r'./Images', '%03d' %(self.category))
-        #print self.imageDir 
-        #print self.category
-        self.imageList = glob.glob(os.path.join(self.imageDir, '*.JPG'))
-        #print self.imageList
+        self.imageList = glob.glob(os.path.join(self.imageDir, '*.*'))
         if len(self.imageList) == 0:
-            print 'No .JPG images found in the specified dir!'
+            print('No .JPEG images found in the specified dir <%s>!' % self.imageDir)
             return
 
         # default to the 1st image in the collection
@@ -165,7 +167,7 @@ class LabelTool():
         self.total = len(self.imageList)
 
          # set up output dir
-        self.outDir = os.path.join(r'./Labels', '%03d' %(self.category))
+        self.outDir = os.path.join(r'./Labels', '%03d' % (self.category))
         if not os.path.exists(self.outDir):
             os.mkdir(self.outDir)
 
@@ -190,7 +192,7 @@ class LabelTool():
             self.egLabels[i].config(image = self.egList[-1], width = SIZE[0], height = SIZE[1])
 
         self.loadImage()
-        print '%d images loaded from %s' %(self.total, s)
+        print('%d images loaded from %s' % (self.total, s))
 
     def loadImage(self):
         # load image
@@ -199,7 +201,7 @@ class LabelTool():
         self.tkimg = ImageTk.PhotoImage(self.img)
         self.mainPanel.config(width = max(self.tkimg.width(), 400), height = max(self.tkimg.height(), 400))
         self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
-        self.progLabel.config(text = "%04d/%04d" %(self.cur, self.total))
+        self.progLabel.config(text="%04d/%04d" % (self.cur, self.total))
 
         # load labels
         self.clearBBox()
@@ -232,8 +234,7 @@ class LabelTool():
             f.write('%d\n' %len(self.bboxList))
             for bbox in self.bboxList:
                 f.write(' '.join(map(str, bbox)) + '\n')
-        print 'Image No. %d saved' %(self.cur)
-
+        print('Image No. %d saved' % (self.cur))
 
     def mouseClick(self, event):
         if self.STATE['click'] == 0:
